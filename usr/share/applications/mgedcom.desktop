@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=0.86
+Encoding=UTF-8
+Name=mgedcom
+Exec=/usr/bin/mgedcom
+Icon=mgedcom
+Type=Application
+Name[en_US]=mgedcom

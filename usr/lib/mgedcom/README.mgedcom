@@ -1,0 +1,583 @@
+﻿THE INTRO
+---------
+mgedcom
+version 0.87
+2015/11/12
+
+Copyright (C) 2009-2013 Darren Enns <dmenns1@gmail.com>
+
+MGedcom is a cross-platform genealogy application written in Python (PyGTK).
+
+It was primarily designed for the Maemo operating system, which runs on the 
+Nokia N8xx Internet tablet devices -- but it should run on other hardware and 
+operating systems that meet the software requirements.
+
+WARNING!!!  You should never use MGedcom to edit your only copy of a GEDCOM 
+file.  There are many ways that the GEDCOM could become corrupted in the 
+process!  It would be much safer to use MGedcom in a 'view only' mode, or to re-
+validate any changes you have made later, using your proven/primary genealogy 
+program.
+
+THE REQUIREMENTS
+----------------
+MGedcom requires:
+
+- Python (2.5 or higher)
+- PyGTK 
+- gedcom.py (for parsing 'ged' files)
+- xdot.py (for viewing 'dot' files)
+- Graphviz (for interpreting 'dot' files)
+
+THE PROGRAM
+-----------
+It is strongly recommended that MGedcom be run in 'full screen' mode, since it 
+provides the extra window space for fitting in all the screen elements properly! 
+
+Now to look at each main window in turn...
+
+WELCOME WINDOW
+--------------
+This window merely contains an old family photo with the 'MGedcom' title 
+superimposed.  Just 'click' on this to continue.
+
+BASIC WINDOW
+------------
+This window provides the 'front end' to all other window options, and also acts 
+as a display of 'basic' genealogy info.  By default, 'INDI' (individual) GEDCOM 
+record entries are displayed on this screen, but other record types can be 
+toggled off/on using the 'View' menu option (see below).  Only *some* of the 
+most useful fields are displayed in each of the record types.  In order to view/
+edit the actual entire 'raw' GEDCOM, the user clicks the 'Type' column of a 
+record.
+
+Using the 'File' menu option (see below), an existing GEDCOM file can be read.  
+Most of the parsing for the GEDCOM is performed by the excellant Python program 
+named 'gedcom.py', written by Daniel Zappala (see credits below).  No efforts 
+are made to insure that the GEDCOM file is completely valid -- both when reading 
+and writing it.  The GEDCOM standard is fairly complex, and MGedcom is only 
+meant to be a SIMPLE viewer/editor.  When the file is read, a short summary
+of the number of records of each type is shown to the user (which can then be 
+closed).  As well, the file name of the GEDCOM file opened will now display
+in the window title bar.
+
+The following hardware keys are enabled on the text windows:
+
+- Full screen (F6) = toggle full screen mode
+- Zoom in (F7)     = increase font size
+- Zoom out (F8)    = decrease font size
+
+The column widths are adjustable via a mouse/pen 'drag' operation.
+
+MENU OPTIONS
+------------
+The following menu options are present on the primary screen:
+
+File
+- Open Gedcom       = Open existing GEDCOM file
+- Save Gedcom       = Save current internal record state as GEDCOM file
+- Quit              = Exit the program (information will *not* be saved!)
+- Refresh           = Refresh view of GEDCOM
+
+Edit
+- Add Individual    = Create 'INDI' GEDCOM record
+- Add Spouse        = Create 'INDI' GEDCOM record and 'FAM' GEDCOM record 
+                      attach to another 'INDI'
+- Add Child         = Create 'INDI' GEDCOM record and attach to existing 'FAM' 
+                      GEDCOM record
+- Add Father        = Create 'INDI' GEDCOM record and 'FAM' GEDCOM record and 
+                      attach as 'father'
+- Add Mother        = Create 'INDI' GEDCOM record and 'FAM' GEDCOM record and 
+                      attach as 'mother'
+- Add Family        = Create 'FAM' GEDCOM record
+- Add Note          = Create 'NOTE' GEDCOM record
+- Delete Individual = Delete 'INDI' GEDCOM record and sever links in existing 
+                      'FAM' records
+- Delete Family     = Delete 'FAM' GEDCOM record and sever links in existing 
+                      'INDI' records
+
+View
+- Individuals       = Toggle 'INDI' GEDCOM record display (default)
+- Families          = Toggle 'FAM' GEDCOM record display
+- Notes             = Toggle 'NOTE' GEDCOM record display
+- Submitters        = Toggle 'SUBM' GEDCOM record display
+- Repositories      = Toggle 'REPO' GEDCOM record display
+- Sources           = Toggle 'SOUR' GEDCOM record display
+- Objects           = Toggle 'OBJE' GEDCOM record display
+- Submissions       = Toggle 'SUBN' GEDCOM record display
+- Custom            = Toggle '????' GEDCOM record display (record types that 
+                      are not recognized)
+
+Expansion
+- ParentChild       = Expand individual treeview as Parents to Children 
+                      (default)
+- ChildParent       = Expand individual treeview as Children to Parents
+
+DotGraphs
+- Parents           = Set toggle for plotting 'parents' in family tree
+- Children          = Set toggle for plotting 'children' in family tree
+- Everyone          = Set toggle for plotting everyone in family tree
+
+- Siblings Include     = Set toggle for including siblings in plot of family tree
+- Spouses Include      = Set toggle for including spouses (only immediate) in plot
+                         of family tree
+- Living Dates Include = Set toggle for including dates of living persons
+
+- Set Dot Graph Title         = Set title for graph in the generated 'dot' file
+- Generate Dot Graph          = Generate Graphviz 'dot' file for descendents of 
+                                selected individual
+- View Dot Graph with xdot    = Open and view Graphviz 'dot' file using 'xdot' 
+                                external program
+- Convert Dot Graph to PDF    = Convert Graphviz 'dot' file to 'PDF' format 
+                                (same file name with '.pdf' suffix)
+- Convert Dot Graph to PNG    = Convert Graphviz 'dot' file to 'PNG' format 
+                                (same file name with '.png' suffix)
+- Convert Dot Graph to SVG    = Convert Graphviz 'dot' file to 'SVG' format 
+                                (same file name with '.svg' suffix)
+
+Reports
+- Last Name Frequency         = Show last name frequency list in order of 
+                                most-occurring names
+
+Help
+- Readme            = Displays this README file
+- License           = Displays COPYING file
+- About             = Display version and contact info for MGedcom
+
+The following menu options are present on the 'raw' GEDCOM screen screen:
+
+- Insert Raw Gedcom Row Before = insert new empty row into the raw GEDCOM 
+                                 before current selected row
+- Insert Raw Gedcom Row After  = insert new empty row into the raw GEDCOM after 
+                                 current selected row
+- Delete Raw Gedcom Row        = remove current selected raw GEDCOM row
+
+OPERATION
+---------
+Use the 'scrollbars' to scroll to the individual, family, etc. that you are 
+interested in viewing.  For greater detail (i.e. the actual 'raw' GEDCOM), 
+click on the 'Type' column of the record you are interested in.  You can also 
+edit the raw GEDCOM, as well as insert additional lines, or delete existing 
+lines via the menu.  No efforts are made to resolve these changes with the rest 
+of the GEDCOM.  If you wish to do 'cleaner/safer' editing, use the menu options 
+on the primary display instead.
+
+Many of the columns on the primary display can be sorted i.e. clicking once 
+will sort in ascending order, and clicking again will sort in a descending 
+order.  Unfortunately, columns cannot be combined for sorting.
+
+One of the more powerful (and complicated!) features of the 'individual' 
+display is the 'nesting' interface i.e. clicking on the 'expand' arrow for an 
+individual will either show the 'children' (default behavior), or 'parents' 
+(alternative behavior) of that individual.  For the 'ParentChild' (default) 
+display, the 'spouse(s)' are actually shown as the immediate 'dependent', 
+followed by 'children' from that family relationship.  However, there are 
+limitations to this feature: new individuals are *not* fully expandable in all 
+locations of the tree that they may appear in.  For that reason, it is best to 
+do editing and establishment of relationships at the same level as they were 
+created in the first place i.e. either fully new and independent at the top-
+level of the tree, or in a dependent relationship with an existing individual 
+(e.g. spouse or child).  To make the new individuals/relationships show up in 
+*all* locations of the tree after adding them, use the 'Refresh' menu option.
+
+When adding new spouses and children, the correct order to do so is:
+- select an individual 
+- use the 'Add Spouse' menu option to add a new spouse under the selected 
+  individual
+- select the new spouse
+-  use the 'Add Child' menu option to add a new child under the selected spouse
+Doing it this way insures that the new child is added to the correct individual/
+spouse relationship (in a sense, a 'family').
+
+Some pointer values are 'validated' when clicked (i.e. for edit) in the 'raw' 
+GEDCOM display.  That is, if you attempt to enter a non-existant value, you will 
+receive a warning to that effect.
+
+The 'raw' GEDCOM edit will also warn you of gross errors to the data on that 
+screen e.g. if you attempt to insert a non-valid 'level' or 'tag' value, a 
+warning will be produced.
+
+A certain amount of 'hyperlinking' behavior can be seen in both the record 
+'list display, as well as inside the 'raw' GEDCOM displays.
+
+e.g. clicking on a husband or wife name in the 'Family' display will locate and 
+position the cursor on the 'individual' display to that person (assuming the 
+'individual' display is currently open)
+
+e.g. clicking on a 'pointer' value in one of the 'raw' GEDCOM displays ('HUSB', 
+'WIFE', 'CHILD, etc.) will locate and position the cursor on the 'individual' 
+display to that person (assuming the 'individual' display is currently open)
+
+e.g. clicking on a 'pointer' value in one of the 'raw' GEDCOM displays ('FAMS', 
+'FAMC', etc.) will locate and position the cursor on the 'family' display of 
+that family (assuming the 'family' display is currently open)
+
+If the 'Type' column was the last clicked column in the 'individual' display, 
+then when any column of the 'family' display is clicked, the 'raw' GEDCOM mode 
+is assumed -- whether or not the family 'type' column was clicked.  To return to 
+normal display mode, insure that some *other* column of the 'individual' record 
+is clicked before clicking on the 'family' record.  Also see a reference to this 
+in the 'bugs' section (see below).
+  
+THE FILES
+---------
+The following files/directories are currently part of the mgedcom distribution,
+and stored in the '/usr/lib/mgedcom' directory:
+
+mgedcom.jpg	= banner splash screen for starting application; click to 
+                  continue
+mgedcom.py	= python program
+README		= this file
+COPYING		= software license notes
+gedcom.py	= python GEDCOM parser by Daniel Zappala (with some of my own 
+                  modifications)
+xdot.py		= python dot viewer by Jose Fonseca (with some of my own 
+                  modifications)
+
+As well, since it appears to be 'the right thing to do', the default location 
+for the GEDCOM, dot, etc.  files for MGedcom is set to be '/home/user/.mgedcom', 
+which starts out containing the following:
+
+fake.ged	= small fake GEDCOM file
+fake.dot        = fake Graphviz 'dot' file created from 'fake.ged'
+
+THE HISTORY AND MOTIVATION
+--------------------------
+Genealogy has been one of my hobbies since I was quite young.  As with many 
+young people, I was asked to create a 'family history' project (complete with a 
+'family tree') in elementary school (for me, this was Grade 5).  Later, in high 
+school, a more eloborate project was required.  I discovered a valuable resource 
+for the history of my ethnic background (Mennonites) when I was a teenager -- 
+the 'Mennonite Heritage Center' in Winnipeg, Manitoba, Canada -- and whenever my 
+family travelled into Winnipeg, I asked to be dropped off so that I could study 
+there.  In later years, when large family gatherings were held, I was the 
+defacto 'genealogist' that begged and pleaded with my relatives to provide more 
+family tree information -- and in return I provided each with a 'mini-poster' of 
+a family tree 'wheel' that I had designed.  Disaster struck in the late 1980s -- 
+my house was broken into, and in addition to the typical items that were stolen, 
+my briefcase containing all my genealogy research was also taken -- along with 
+many family photos, school pictures, etc..  I almost decided to give up on 
+genealogy at that point, since so much of my work had been lost.  However, I 
+slowly struggled back from this, and with the advent of the internet, and the 
+ability to research and publish (and preserve!) my work on the web, I have built
+up quite a bit of info on my family.
+
+In the world of 'open source' and Linux, I ran across many useful genealogy 
+programs,
+including:
+
+- Lifelines
+- GRAMPS
+- FTree
+
+The one that I used (and continue to use the most!) is 'FTree' -- I like how 
+compact and 'clean' the interface is, and I have corresponded with the author on 
+his work, and now my own efforts.
+
+On the Nokia Internet Tablet usergroup website (see below), I noticed a few 
+threads inquiring about whether any 'genealogy' programs were available for that 
+platform.  After completing my 'astronomy' applications, I started to look for 
+more challenges for my budding Python skills, and decided to tackle a 'GEDCOM 
+reader'.  The rest is history :)
+
+THE TOOLS
+---------
+The Nokia N800 (running OS2008) is easily capable of running Python.  In this
+particular case, the 'PyGTK' running on my Fedora-based Linux desktop x86 PC
+was extremely similar to the one which I installed on the N800.  No compilers
+were required.
+
+All development was performed on the Fedora x86 linux desktop.  For the most
+part, this provided a very good development environment, and periodically the
+code was simply copied to the N800 to prove that everything worked, and the
+elements were able to fit onto the screen properly.  The only limitations
+encountered in this environment were that the specialized 'Hildon' code was
+only recognized on the N800 itself.
+
+THE FUTURE
+----------
+The ability to be able to add/edit more of the highest-level GEDCOM record 
+types might be possible, as well as being able to display media referenced by 
+multimedia 'OBJE' tags.
+
+THE EXTERNAL RESOURCES
+----------------------
+Much thanks go to the people behind the following websites and software for
+providing the free tools for use in MGedcom:
+
+- http://darethehair.no-ip.org/dmenns3/genealogy.html (My family history page)
+- http://www.mennonitechurch.ca/programs/archives/ (Mennonite Heritage Center) 
+- http://internettablettalk.com/forums/ (Nokia Internet Tablet user community)
+- http://ilab.cs.byu.edu/cs460/code/gedcom/gedcom.py (gedcom.py GEDCOM parser 
+  by Daniel Zappala)
+- http://code.google.com/p/jrfonseca/wiki/XDot (Graphviz 'dot' diagram viewer by 
+  Jose Fonseca)
+- http://www.graphviz.org/ (Graphviz graph visualization software)
+
+Thanks also go to the developers of other open source genealogy programs, from 
+whom I received inspiration and encouragement:
+
+- http://www.ftree.org/ (ftree genealogy application by Clive Stubbings)
+- http://www.gramps-project.org/wiki/index.php?title=Main_Page (GRAMPS genealogy 
+  application)
+- http://lifelines.sourceforge.net/ (Lifelines genealogy application)
+
+There are many good sites explaining the GEDCOM standard.  Here are a few:
+
+- http://en.wikipedia.org/wiki/GEDCOM
+- http://kobesearch.cpan.org/htdocs/Gedcom/Gedcom.pm.html
+- http://lifelines.sourceforge.net/manual307/x108.html
+- http://www.cyndislist.com/gedcom.htm
+- http://globalgenealogy.com/globalgazette/gazrr/gazrr82a.htm
+- http://www.easygensolutions.com/gedcom/gedcom.html
+
+There are some good sites with interesting sample GEDCOMs:
+
+- http://famousfamilytrees.blogspot.com/
+- http://www3.dcs.hull.ac.uk/public/genealogy/presidents/presidents.html
+
+There are also many good sites that explain Unicode, and how to use it with
+Python programs:
+
+- http://www.unicode.org/standard/WhatIsUnicode.html
+- http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
+- http://www.columbia.edu/kermit/utf8.html
+- http://gedcom-parse.sourceforge.net/doc/encoding.html
+- http://unicode.org/faq/utf_bom.html#BOM
+- http://www.codeguru.com/cpp/misc/misc/multi-lingualsupport/article.php/c10451
+- http://boodebr.org/main/python/all-about-python-and-unicode
+- http://www.amk.ca/python/howto/unicode
+- http://farmdev.com/talks/unicode/
+- http://krys.ca/entry/58/
+- https://0brg.net/~hraban/blog/2008/unicode-in-python
+
+FAQ (Frequently Asked Questions)
+--------------------------------
+Q: Have users really asked all the questions posed in this FAQ?
+A: No, at least not yet -- but I think that it is an appropriate way to 
+   describe some of the behavior, challenges, and compromises that were made 
+   during development :)
+
+Q: Why isn't MGedcom properly reading/interpreting my GEDCOM file?
+A: I did all my testing using my own personal small and large GEDCOMs, as well 
+   as reading a few 'stress test' ones that I found on the web.  I was amazed by 
+   some of the content that appeared to violate the 'rules' of GEDCOM coding, but 
+   nevertheless tried to accomodate them.  If your GEDCOM does not work, I would 
+   be interested in seeing it -- but I am fairly confident that typical/normal
+   GEDCOM files are handled reasonably.
+
+Q: Why is so MGedcom so slow in loading my GEDCOM file?
+A: Well, I have found it to be remarkably fast on a PC desktop -- including my 
+   own personal GEDCOM.  On my N800, it takes about 60 seconds to open a GEDCOM 
+   with 1500 people and 500 families.  On the Nokia N8x0 device, it is noticably 
+   slower, but still (I think) fairly speedy.  All I can say is that it takes a 
+   while to read and parse GEDCOMs, and to load them into a PyGTK tree! :)
+
+Q: Why is the 'raw' GEDCOM presented to the user for viewing/editing rather 
+   than a nice frontend?
+A: Writing a GEDCOM viewer/editor able to understand *all* GEDCOM records, 
+   tags, nesting, syntax, etc.  was perceived to be an overwhelming task -- at 
+   least for me!  Rather than limit the functionality to my own abilities, I 
+   decided to 'open up' the entire GEDCOM to the user.  They therefore have a 
+   much wider ability to edit the 'raw' GEDCOM any way they like -- including 
+   the ability to totally corrupt it :)
+
+Q: Why was MGedcom developed?  Aren't there much better genealogy applications 
+   out there?
+A: This project originated from a desire to learn Python, and to write an 
+   application for use on the Nokia Internet tablet series.  I had previously 
+   written some other applications, and now wanted to write a more application 
+   using tables and 'trees'.  I knew of no genealogy programs available for the 
+   N8x0 platform.  Certainly, on the desktop, and other PDA operating systems, 
+   there are *much* better genealogy applications available!
+
+Q: Why wasn't MGedcom written in a much faster/superior programming language?
+A: Python is a modern, popular, and (fairly) easy programming language.  It is 
+   cross-platform, doesn't require a compiler (since it is a 'scripting' 
+   language), and allows me to develop MGedcom 100% on my desktop (big screen!).  
+   I also originally perceived that Python would not be fast enough on the Nokia 
+   N8xx Internet tablets, but I was pleasantly surprised how fast it really ran. 
+
+Q: Can MGedcom be run on other operating systems than Maemo (and N8xx Internet 
+   tablets)?
+A: Although written specifically for the Maemo operating system, I have 
+   intentionally coded so that the application should run successfully in any 
+   'PyGTK' environment also containing the 'Graphviz' program.
+
+Q: Why doesn't MGedcom use the proper 'Hildon' style file chooser widget?
+A: At the last minute, I noticed how annoying it was compared to the default 
+   PyGTK widget.  Two things that convinced me were:
+   - not opening in the desired directory
+   - file filtering not working properly
+   Perhaps I will find some overriding deficiency, forcing me to go back to the 
+   Hildon widget, but for now I will leave it this way.
+
+Q: Where did the silly name 'MGedcom' come from?
+A: The name 'mgedcom' is a combination of 'Maemo' + 'Gedcom'.  Not very clever, 
+   but I couldn't think of a better name at the time :)
+
+Q: Why does the UI (user interface) of MGedcom look so shabby?
+A: Well, part of that is my lack of a serious programming background, but it 
+   may also be due (in part) to the limitations of PyGTK from a 'visual' 
+   perspective. 
+
+Q: What challenges were encountered while developing MGedcom?
+A: More than I care to talk about :)  Since I started with minimal Python 
+   programming knowledge, also every step along the way had at least some degree 
+   of difficulty for me.  MGedcom started as a completely 'text-based' 
+   application, and even for that I had to figure out how the 'PyGTK' tree and 
+   menu systems worked.  For graphics, I opted to use the external application
+   named 'Graphviz' (which I had also cross-compiled for the N8x0 plaform), 
+   since it has the ability to draw very nice 'tree' diagrams.  The biggest 
+   challenge of all was to provide some degree of GEDCOM 'edit' ability, which 
+   is a great deal more difficult than simply writing a 'viewer'.
+
+Q: Why is MGedcom packaged only as a Debian 'deb' file?  What about 'tar' and 
+   'RPM'?
+A: I myself have been a Redhat/Fedora desktop Linux user since the early days, 
+   and so I also love RPM packages.  However, since MGedcom was developed for 
+   the Maemo operating system, I decided to use Debian 'deb' packaging instead.  
+   Fortunately for me, 'PyPackager' was released and allowed me to easily create 
+   such packages.  Note that 'deb' files are just a special variation (?) of the 
+   classic 'tar.gz' packaging scheme, so anybody that knows their way around the 
+   'ar' and 'tar' commans dcan open the MGedcom 'deb' package for their own 
+   platform.
+
+Q: Why can only one column be sorted at a time?
+A: This is the 'easy' behavior of PyGTK treeviews -- anything else was too 
+   difficult for me :)
+
+Q: What crazy version numbering scheme is being used for MGedcom?
+A: Every time I make a large enough change that I want to 'snapshot' the 
+   functional status, a new version number is created, starting from 0.01.  
+   Hypothetically, by the time it reaches 1.0, MGedcom should be fairly complete 
+   and functional -- but *not* perfect :)
+
+Q: Why did you use the 'dot' program of Graphviz instead of generating your own 
+   graphics with 'Cairo'?
+A: The complexity of drawing graphs showing family relationships in a nice way 
+   was way beyond my abilities.  Graphviz is an extremely powerful graph 
+   generator with a very simple syntax.  After discovering that the 'xdot' 
+   viewer worked very well -- including on Maemo -- I knew that this was my 
+   answer.
+
+Q: Does MGedcom handle my language/fonts?
+A: Although my impression is that the 'ANSEL' character set is supported by the
+   GEDCOM standard, I decided to ignore it entirely, due to the nasty comments
+   I had read regarding the difficulty of implementing it into genealogy
+   applications.  Instead, when the need presented itself, I concentrated on
+  'UNICODE' instead.  In the end, support for the UNICODE character set was
+   recently introduced into MGedcom, with either UTF-8 or UTF-16 character 
+   encoding.  Further, BOM (byte order mark) presence is also now being handled.
+   BOM is typically not present with UTF-8, but is with UTF-16.  Both 'BE' (big
+   end) and 'LE' (little end) byte orders are supported for UTF-16.  When a
+   GEDCOM is saved, the same UNICODE encoding standard is used as the file was
+   read in with.  For UTF-16 GEDCOMs missing a BOM, one is added upon saving.
+   The whole concept of UNICODE is very new to me, and -- like everything else 
+   -- is not guaranteed to work :)
+
+Q: Why are there so few features in MGedcom?
+A: I wanted to release *something* that might be useful to some people.  Once I 
+   find out what extra features people might like, and whether I have the 
+   ability to implement them, more could happen.
+
+Q: What should I do if I discover a bug in MGedcom?
+A: Keep it to yourself :)  Actually, I would appreciate knowing about it.  I 
+   don't relish the thought of releasing a new version *just* to fix bugs, but 
+   if the fixes are easy enough, and the benefit strong enough, then it is best 
+   for all if this is done.  Some bugs are simple typing or thinking mistakes, 
+   while others may be due to the underlying infrastructure itself e.g. I 
+   discovered subtle behavior changes between 'Maemo' and 'Desktop' execution of 
+   MGedcom -- some which I have been able to compensate for.  
+ 
+Q: Why are you giving so many excuses for MGedcom?
+A: Because I want people to realize that MGedcom is 'a labor of love', and not 
+   commercial software that they paid for using their hard-earned cash, and that 
+   it is 'just me' and not a team of crack-shot programmers churning out perfect 
+   code :) 
+
+Q: Can I send you my GEDCOM file?
+A: Sure, but some of your relatives might consider it an 'intrusion' of their 
+   privacy to have strangers (like myself) looking at their information.  But if 
+   you have a problem with your GEDCOM, I *might* be able to diagnose it if I 
+   had your GEDCOM.  In that case, you *might* want to remove the 'living' 
+   people before sending your GEDCOM to me.
+
+Q: Do you intend to continue to develop MGedcom?
+A: As of this writing, the vast majority of features that I wanted (and believe 
+   that I have the necessary skills to develop) are present.  On user request, I 
+   will consider further development, but I would also like to move on to some 
+   other projects for a change of pace! I do have other interests than just 
+   genealogy -- check my personal web pages if you are curious!
+
+BUGS
+----
+One possibly undesirable behavior that I have been powerless to change is the 
+one where a 'raw' GEDCOM edit screen opens up on the individual linked to the 
+family husband/wife that was clicked on -- rather than simply positioning the 
+*cursor* to the individual that was linked.  PyGTK seems to 'remember' if the 
+last action on the 'individual' display was a click on the 'Type' column (which 
+triggers the 'raw' GEDCOM edit).  A second click on the husband/wife name in the 
+'family' view will revert back to the desired behavior.  My attempts to reset 
+the 'individual' column selection away from the 'Type' column has not succeeded.
+
+As well, MGedcom does *not* protect you from creating a corrupted GEDCOM file, 
+nor from corrupting an existing GEDCOM file.  You should never use MGedcom on 
+your *only* version of a precious family GEDCOM file!
+
+DEDICATION
+----------
+MGedcom is dedicated to the memory of my father, Jacob Abram Enns, who passed 
+away on Oct 26, 2004.  He always encouraged my genealogy hobby, and provided car 
+rides to Winnipeg so that I could visit the Mennonite Heritage Center. 
+
+CHANGES
+-------
+2009/02/21 = version 0.72
+- original version released to public
+
+2009/06/09 = version 0.74
+- added support for NOTE lines where the actual text begins on the same line
+- added experimental support for UNICODE (UTF-8 and UTF-16) in reading/writing
+- added GEDCOM file name to Window title upon reading
+
+2009/07/24 = version 0.75
+- fix bug in parent dot graph generator option
+
+2010/12/29 = version 0.76
+- fix bug in parsing date fields with leading blanks
+
+2013/12/07 = version 0.77
+- add toggle for including dates of living individuals
+- add toggles for including spouses and siblings
+- rework menu to create toggle options for controlling DOT file generation
+
+2013/12/19 = version 0.78
+- fix bug in detection of sibling toggle option
+
+2014/02/22 = version 0.79
+- fix bug in output format option
+
+2014/03/18 = version 0.80
+- add option to set the title of the graph
+
+2014/03/18 = version 0.81
+- add option to set the depth of the graph
+- enhance code so that 'spouse' toggles also affect children graphs
+
+2014/03/19 = version 0.82
+- adjust colors and formatting of 'dot' commands
+
+2014/03/22 = version 0.83
+- fix bug in processing multiple spouses
+
+2014/03/23 = version 0.84
+- fix bug with duplicate nodes using 'strict' keyword
+
+2015/11/11 = version 0.85
+- populate user '.mgedcom' directory with sample files upon directory creation
+
+2015/11/12 = version 0.86
+- add radio buttons to chose graph direction
+- get newer version of 'xdot.py' to handle integer bug
+- move dot conversion menu options into radio button submenu 
+--------------------------------------------------------------------------------

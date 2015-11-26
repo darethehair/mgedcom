@@ -1,0 +1,49 @@
+WINDOWS TIPS
+------------
+mgedcom
+version 0.76
+2010/12/29
+
+In an effort to make it easier for Windows users to use my Python apps, here are some brief
+instructions for installing the necessary prerequisite software, as well as configuring
+and running my apps themselves.
+
+1) Install the base Python programming language interpreter:
+
+- visit the following website: https://github.com/dieterv/pygtk-installer
+- download/run one of the versions (currently a choice between '2.6' and '2.7')
+  e.g. 'http://www.python.org/ftp/python/2.6.6/python-2.6.6.msi' for version 2.6
+       'http://www.python.org/ftp/python/2.7.1/python-2.7.1.msi' for version 2.7
+- after this is done, you should be able to test Python in a 'shell' (via 'python.exe')
+
+2) Install an 'all-in-one' PyGTK extension package:
+
+- click the 'Downloads' button on the same webpage
+- download/run a matching version of 'pygtk-all-in-one'
+  e.g. 'pygtk-all-in-one-2.24.0.win32-py2.6.msi' if you installed version 2.6
+       'pygtk-all-in-one-2.24.0.win32-py2.7.msi' if you installed version 2.7
+
+3) [Optionally] install the Graphviz graph visualization software package:
+
+- visit the following website: http://www.graphviz.org/Download_windows.php
+- download/run Graphviz for Windows
+  e.g. 'graphviz-2.26.3.msi'
+
+4) Install 'MGedcom' application (what this is all about!):
+
+- visit the following website: https://sites.google.com/site/darethehair/home/software
+- download/run the zipfile version of MGedcom
+  e.g. https://sites.google.com/site/darethehair/home/software/mgedcom_076.zip
+
+5) Move the '.mgedcom' directory directly under your private Windows user home directory
+   e.g. 'C:\Documents and Settings\yourusername\'
+
+6) You should now be able to start the application by clicking on the 'mgedcom.py' icon.
+   Alternatively, you should be able to invoke it on the command line while in that directory:
+   e.g. python.exe mgedcom.py
+
+CHANGES
+-------
+2011/05/12
+- creation of this document
+

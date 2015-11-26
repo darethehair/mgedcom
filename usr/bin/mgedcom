@@ -1,0 +1,2 @@
+#!/bin/sh
+exec python -O /usr/lib/mgedcom/mgedcom.py
