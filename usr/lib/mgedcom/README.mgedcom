@@ -2,9 +2,9 @@
 ---------
 mgedcom
 version 0.87
-2015/11/12
+2015/12/18
 
-Copyright (C) 2009-2013 Darren Enns <dmenns1@gmail.com>
+Copyright (C) 2009-2016 Darren Enns <dmenns1@gmail.com>
 
 MGedcom is a cross-platform genealogy application written in Python (PyGTK).
 
@@ -580,4 +580,9 @@ CHANGES
 - add radio buttons to chose graph direction
 - get newer version of 'xdot.py' to handle integer bug
 - move dot conversion menu options into radio button submenu 
+
+2015/12/17 = version 0.87
+- add 'mgedcom.ini' options file for setting/saving user preferences
+- add explicit dot file select menu option for conversion
+- add ability to preserve last-used GEDCOM and DOT directory locations
 --------------------------------------------------------------------------------
