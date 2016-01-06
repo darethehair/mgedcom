@@ -13,7 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -33,15 +33,16 @@
 #            - Handle case of empty/blank first/last names
 # 2009/06/09 - Handle case of NOTE text starting on NOTE line itself
 #            - Handle case of UTF-16-BE/UTF-16-LE with/without BOM characters
-#	     - Handle case of UTF-8 with BOM characters
+#            - Handle case of UTF-8 with BOM characters
+
+import string
+import codecs
 
 __all__ = ["Gedcom", "Element", "GedcomParseError"]
 
-# Global imports
-import string
-import codecs											# Added by Darren Enns 2009-06-08
 
 class Gedcom:
+
     """ Gedcom parser
 
     This parser is for the Gedcom 5.5 format.  For documentation of
@@ -57,17 +58,16 @@ class Gedcom:
 
     """
 
-    def __init__(self,file):
+    def __init__(self, file):
         """ Initialize a Gedcom parser. You must supply a Gedcom file.
         """
         self.__element_list = []
         self.__element_dict = {}
-        self.__element_top = Element(-1,"","TOP","",self.__element_dict)
+        self.__element_top = Element(-1, "", "TOP", "", self.__element_dict)
         self.__current_level = -1
         self.__current_element = self.__element_top
         self.__individuals = 0
-        #self.__parse(file)									# Commented out by Darren Enns 2009-06-08
-        self.__unicode = self.__parse(file)							# Added by Darren Enns 2009-06-08
+        self.__unicode = self.__parse(file)
 
     def unicode_type(self):
         """ Return a list of all the elements in the Gedcom file.  The
@@ -90,64 +90,66 @@ class Gedcom:
 
     # Private methods
 
-    def __parse(self,file):
+    def __parse(self, file):
         # open file
         # go through the lines
-	f = open(file,"rb")
+        f = open(file, "rb")
 
-	sample = f.read(4)									# Added by Darren Enns 2009-06-08
-	if (sample.startswith(codecs.BOM_UTF16_LE)):						# Added by Darren Enns 2009-06-08
-		unicode = "utf-16-le"								# Added by Darren Enns 2009-06-08
-		f = codecs.open(file,"rb", "utf-16")						# Added by Darren Enns 2009-06-08
-	elif (sample.startswith(codecs.BOM_UTF16_BE)):						# Added by Darren Enns 2009-06-08
-		unicode = "utf-16-be"								# Added by Darren Enns 2009-06-08
-		f = codecs.open(file,"rb", "utf-16")						# Added by Darren Enns 2009-06-08
-	elif sample.startswith(codecs.BOM_UTF8):						# Added by Darren Enns 2009-06-08
-		unicode = "utf-8"								# Added by Darren Enns 2009-06-08
-		#f = codecs.open(file,"rb", "utf-8")						# Added by Darren Enns 2009-06-08
-		f = codecs.open(file,"rb", "utf-8-sig")						# Added by Darren Enns 2009-06-08
-	elif sample[0::2] == '\x00\x00' and sample[1::2] != '\x00\x00':				# Added by Darren Enns 2009-06-08
-             	unicode = "utf_16_be"								# Added by Darren Enns 2009-06-08
-		f = codecs.open(file,"rb", "utf-16-be")						# Added by Darren Enns 2009-06-08
-	elif sample[1::2] == '\x00\x00' and sample[0::2] != '\x00\x00':				# Added by Darren Enns 2009-06-08
-             	unicode = "utf_16_le"								# Added by Darren Enns 2009-06-08
-		f = codecs.open(file,"rb", "utf-16-le")						# Added by Darren Enns 2009-06-08
-	else:											# Added by Darren Enns 2009-06-08
-		#unicode="ansi"									# Added by Darren Enns 2009-06-08
-		unicode="utf-8"									# Added by Darren Enns 2009-06-08
-		f = open(file,"rb")								# Added by Darren Enns 2009-06-08
+        sample = f.read(4)
+        if (sample.startswith(codecs.BOM_UTF16_LE)):
+            unicode = "utf-16-le"
+            f = codecs.open(file, "rb", "utf-16")
+        elif (sample.startswith(codecs.BOM_UTF16_BE)):
+            unicode = "utf-16-be"
+            f = codecs.open(file, "rb", "utf-16")
+        elif sample.startswith(codecs.BOM_UTF8):
+            unicode = "utf-8"
+            f = codecs.open(file, "rb", "utf-8-sig")
 
-        #f = open(file)										# Commented out by Darren Enns 2009-06-08
+        elif sample[0::2] == '\x00\x00' and sample[1::2] != '\x00\x00':
+            unicode = "utf_16_be"
+            f = codecs.open(file, "rb", "utf-16-be")
+        elif sample[1::2] == '\x00\x00' and sample[0::2] != '\x00\x00':
+            unicode = "utf_16_le"
+            f = codecs.open(file, "rb", "utf-16-le")
+        else:
+            unicode = "utf-8"
+            f = open(file, "rb")
+
         number = 1
         for line in f.readlines():
-	    if line[-2] == '\r':								# Added by Darren Enns 2009-06-08
-	      line=line[0:-2] + '\n' # remove carriage return	# Added by Darren Enns 2009-06-08
-            self.__parse_line(number,line)
+            if line[-2] == '\r':
+                # remove carriage return
+                line = line[0:-2] + '\n'
+            self.__parse_line(number, line)
             number += 1
         self.__count()
 
-	return unicode
+        return unicode
 
-    def __parse_line(self,number,line):
-        # each line should have: Level SP (Pointer SP)? Tag (SP Value)? (SP)? NL
+    def __parse_line(self, number, line):
+        # each line should have:
+        # Level SP (Pointer SP)? Tag (SP Value)? (SP)? NL
         # parse the line
         parts = string.split(line)
         place = 0
-        l = self.__level(number,parts,place)
+        l = self.__level(number, parts, place)
         place += 1
-        p = self.__pointer(number,parts,place)
+        p = self.__pointer(number, parts, place)
         if p != '':
             place += 1
-        t = self.__tag(number,parts,place)
+        t = self.__tag(number, parts, place)
         place += 1
-        #v = self.__value(number,parts,place)     						# Commented out by Darren Enns 2009-06-06
-        v = self.__value(number,parts,place,line) 						# Added by Darren Enns 2009-06-06
+        # v = self.__value(number,parts,place)
+        #
+
+        v = self.__value(number, parts, place, line)
 
         # create the element
         if l > self.__current_level + 1:
-            self.__error(number,"Structure of GEDCOM file is corrupted")
+            self.__error(number, "Structure of GEDCOM file is corrupted")
 
-        e = Element(l,p,t,v,self.element_dict())
+        e = Element(l, p, t, v, self.element_dict())
         self.__element_list.append(e)
         if p != '':
             self.__element_dict[p] = e
@@ -166,65 +168,67 @@ class Gedcom:
         self.__current_level = l
         self.__current_element = e
 
-    def __level(self,number,parts,place):
+    def __level(self, number, parts, place):
         if len(parts) <= place:
-            self.__error(number,"Empty line")
+            self.__error(number, "Empty line")
         try:
             l = int(parts[place])
         except ValueError:
-            self.__error(number,"Line must start with an integer level")
+            self.__error(number, "Line must start with an integer level")
 
         if (l < 0):
-            self.__error(number,"Line must start with a positive integer")
+            self.__error(number, "Line must start with a positive integer")
 
         return l
 
-    def __pointer(self,number,parts,place):
+    def __pointer(self, number, parts, place):
         if len(parts) <= place:
-            self.__error(number,"Incomplete Line")
+            self.__error(number, "Incomplete Line")
         p = ''
         part = parts[1]
         if part[0] == '@':
-            if part[len(part)-1] == '@':
+            if part[len(part) - 1] == '@':
                 p = part
                 # could strip the pointer to remove the @ with
                 # string.strip(part,'@')
                 # but it may be useful to identify pointers outside this class
             else:
-                self.__error(number,"Pointer element must start and end with @")
+                self.__error(
+                    number, "Pointer element must start and end with @")
         return p
 
-    def __tag(self,number,parts,place):
+    def __tag(self, number, parts, place):
         if len(parts) <= place:
-            self.__error(number,"Incomplete line")
+            self.__error(number, "Incomplete line")
         return parts[place]
 
-    #def __value(self,number,parts,place):     							# Commented out by Darren Enns 2009-06-06
-    def __value(self,number,parts,place,line): 							# Added by Darren Enns 2009-06-06
-	m = place                              							# Added by Darren Enns 2009-06-06
+    def __value(self, number, parts, place, line):
+
+        m = place
         if len(parts) <= place:
             return ''
-        p = self.__pointer(number,parts,place)
-        #if p != '': 										# Commented out by Darren Enns 2009-06-06
-        if p != '' and parts[2] != "NOTE":     							# Added by Darren Enns 2009-06-06
+        p = self.__pointer(number, parts, place)
+        if p != '' and parts[2] != "NOTE":
             # rest of the line should be empty
             if len(parts) > place + 1:
-                self.__error(number,"Too many elements")
+                self.__error(number, "Too many elements")
             return p
         else:
-	    s = line.split(" ", place)         							# Added by Darren Enns 2009-06-06
+
+            s = line.split(" ", place)
             # rest of the line should be ours
             vlist = []
             while place < len(parts):
                 vlist.append(parts[place])
                 place += 1
             v = string.join(vlist)
-	    v = s[m][:-1]                      							# Added by Darren Enns 2009-06-06
+
+            v = s[m][:-1]
             return v
-            
-    def __error(self,number,text):
+
+    def __error(self, number, text):
         error = "Gedcom format error on line " + str(number) + ': ' + text
-        raise GedcomParseError, error
+        raise (GedcomParseError, error)
 
     def __count(self):
         # Count number of individuals
@@ -233,23 +237,26 @@ class Gedcom:
             if e.individual():
                 self.__individuals += 1
 
-
     def __print(self):
         for e in self.element_list:
-            print string.join([str(e.level()),e.pointer(),e.tag(),e.value()])
+            p = string.join([str(e.level()), e.pointer(), e.tag(), e.value()])
+            print p
 
 
 class GedcomParseError(Exception):
+
     """ Exception raised when a Gedcom parsing error occurs
     """
-    
+
     def __init__(self, value):
         self.value = value
-        
+
     def __str__(self):
-        return `self.value`
+        return repr(self.value)
+
 
 class Element:
+
     """ Gedcom element
 
     Each line in a Gedcom file is an element with the format
@@ -271,12 +278,12 @@ class Element:
     is a spouse.  Likewise, an element with a tag of FAMC has a value
     that points to a family record in which the associated person is a
     child.
-    
+
     See a Gedcom file for examples of tags and their values.
 
     """
 
-    def __init__(self,level,pointer,tag,value,dict):
+    def __init__(self, level, pointer, tag, value, dict):
         """ Initialize an element.  You must include a level, pointer,
         tag, value, and global element dictionary.  Normally initialized
         by the Gedcom parser, not by a user.
@@ -298,7 +305,7 @@ class Element:
     def pointer(self):
         """ Return the pointer of this element """
         return self.__pointer
-    
+
     def tag(self):
         """ Return the tag of this element """
         return self.__tag
@@ -315,11 +322,11 @@ class Element:
         """ Return the parent element of this element """
         return self.__parent
 
-    def add_child(self,element):
+    def add_child(self, element):
         """ Add a child element to this element """
         self.children().append(element)
-        
-    def add_parent(self,element):
+
+    def add_parent(self, element):
         """ Add a parent element to this element """
         self.__parent = element
 
@@ -329,7 +336,7 @@ class Element:
 
     # criteria matching
 
-    def criteria_match(self,criteria):
+    def criteria_match(self, criteria):
         """ Check in this element matches all of the given criteria.
         The criteria is a colon-separated list, where each item in the
 
@@ -354,12 +361,13 @@ class Element:
         # error checking on the criteria
         try:
             for crit in criteria.split(':'):
-                key,value = crit.split('=')
-        except:
+                key, value = crit.split('=')
+        except:  # noqa
             return False
+
         match = True
         for crit in criteria.split(':'):
-            key,value = crit.split('=')
+            key, value = crit.split('=')
             if key == "surname" and not self.surname_match(value):
                 match = False
             elif key == "name" and not self.given_match(value):
@@ -369,67 +377,67 @@ class Element:
                     year = int(value)
                     if not self.birth_year_match(year):
                         match = False
-                except:
+                except:  # noqa
                     match = False
             elif key == "birthrange":
                 try:
-                    year1,year2 = value.split('-')
+                    year1, year2 = value.split('-')
                     year1 = int(year1)
                     year2 = int(year2)
-                    if not self.birth_range_match(year1,year2):
+                    if not self.birth_range_match(year1, year2):
                         match = False
-                except:
+                except:  # noqa
                     match = False
             elif key == "death":
                 try:
                     year = int(value)
                     if not self.death_year_match(year):
                         match = False
-                except:
+                except:  # noqa
                     match = False
             elif key == "deathrange":
                 try:
-                    year1,year2 = value.split('-')
+                    year1, year2 = value.split('-')
                     year1 = int(year1)
                     year2 = int(year2)
-                    if not self.death_range_match(year1,year2):
+                    if not self.death_range_match(year1, year2):
                         match = False
-                except:
+                except:  # noqa
                     match = False
             elif key == "marriage":
                 try:
                     year = int(value)
                     if not self.marriage_year_match(year):
                         match = False
-                except:
+                except:  # noqa
                     match = False
             elif key == "marriagerange":
                 try:
-                    year1,year2 = value.split('-')
+                    year1, year2 = value.split('-')
                     year1 = int(year1)
                     year2 = int(year2)
-                    if not self.marriage_range_match(year1,year2):
+                    if not self.marriage_range_match(year1, year2):
                         match = False
-                except:
+                except:  # noqa
                     match = False
-                    
+
         return match
 
-    def surname_match(self,name):
+    def surname_match(self, name):
         """ Match a string with the surname of an individual """
-        (first,last) = self.name()
+        (first, last) = self.name()
         return last.find(name) >= 0
 
-    def given_match(self,name):
+    def given_match(self, name):
         """ Match a string with the given names of an individual """
-        (first,last) = self.name()
+        (first, last) = self.name()
         return first.find(name) >= 0
 
-    def birth_year_match(self,year):
+    def birth_year_match(self, year):
         """ Match the birth year of an individual.  Year is an integer. """
         return self.birth_year() == year
 
-    def birth_range_match(self,year1,year2):
+    def birth_range_match(self, year1, year2):
         """ Check if the birth year of an individual is in a given range.
         Years are integers.
         """
@@ -438,11 +446,11 @@ class Element:
             return True
         return False
 
-    def death_year_match(self,year):
+    def death_year_match(self, year):
         """ Match the death year of an individual.  Year is an integer. """
         return self.death_year() == year
 
-    def death_range_match(self,year1,year2):
+    def death_range_match(self, year1, year2):
         """ Check if the death year of an individual is in a given range.
         Years are integers.
         """
@@ -451,13 +459,13 @@ class Element:
             return True
         return False
 
-    def marriage_year_match(self,year):
+    def marriage_year_match(self, year):
         """ Check if one of the marriage years of an individual matches
         the supplied year.  Year is an integer. """
         years = self.marriage_years()
         return year in years
 
-    def marriage_range_match(self,year1,year2):
+    def marriage_range_match(self, year1, year2):
         """ Check if one of the marriage year of an individual is in a
         given range.  Years are integers.
         """
@@ -472,8 +480,8 @@ class Element:
         results = []
         for e in self.children():
             if e.tag() == "FAMS":
-                f = self.__dict.get(e.value(),None)
-                if f != None:
+                f = self.__dict.get(e.value(), None)
+                if f is not None:
                     results.append(f)
         return results
 
@@ -482,37 +490,35 @@ class Element:
         first = ""
         last = ""
         if not self.individual():
-            return (first,last)
-            first = "" 										# Added by Darren Enns 2009-02-19
-            last = ""  										# Added by Darren Enns 2009-02-19
+            return (first, last)
+            first = ""
+            last = ""
         for e in self.children():
             if e.tag() == "NAME":
                 # some older Gedcom files don't use child tags but instead
                 # place the name in the value of the NAME tag
                 if e.value() != "":
-                    name = string.split(e.value(),'/')
-                    if len(name) == 3:     							# Added by Darren Enns 2009-02-19
-                        if first == "":    							# Added by Darren Enns 2009-02-19
-                           first = name[0] 							# Added by Darren Enns 2009-02-19
-                        last = name[1]     							# Added by Darren Enns 2009-02-19
-                    else:                  							# Added by Darren Enns 2009-02-19
-                        first = name[0]    							# Added by Darren Enns 2009-02-19
-                    #first = string.strip(name[0]) 						# Commented out by Darren Enns 2009-02-19
-                    #last = string.strip(name[1])  						# Commented out by Darren Enns 2009-02-19
+                    name = string.split(e.value(), '/')
+                    if len(name) == 3:
+                        if first == "":
+                            first = name[0]
+                        last = name[1]
+                    else:
+                        first = name[0]
                 else:
                     for c in e.children():
                         if c.tag() == "GIVN":
                             first = c.value()
                         if c.tag() == "SURN":
                             last = c.value()
-        return (first,last)
+        return (first, last)
 
     def birth(self):
         """ Return the birth tuple of a person as (date,place) """
         date = ""
         place = ""
         if not self.individual():
-            return (date,place)
+            return (date, place)
         for e in self.children():
             if e.tag() == "BIRT":
                 for c in e.children():
@@ -520,7 +526,7 @@ class Element:
                         date = c.value()
                     if c.tag() == "PLAC":
                         place = c.value()
-        return (date,place)
+        return (date, place)
 
     def birth_year(self):
         """ Return the birth year of a person in integer format """
@@ -532,12 +538,12 @@ class Element:
                 for c in e.children():
                     if c.tag() == "DATE":
                         datel = string.split(c.value())
-                        date = datel[len(datel)-1]
-        if date == "":										# Added by Darren Enns 2009-02-19
-            return -1										# Added by Darren Enns 2009-02-19
+                        date = datel[len(datel) - 1]
+        if date == "":
+            return -1
         try:
             return int(date)
-        except:
+        except:  # noqa
             return -1
 
     def death(self):
@@ -545,7 +551,7 @@ class Element:
         date = ""
         place = ""
         if not self.individual():
-            return (date,place)
+            return (date, place)
         for e in self.children():
             if e.tag() == "DEAT":
                 for c in e.children():
@@ -553,7 +559,7 @@ class Element:
                         date = c.value()
                     if c.tag() == "PLAC":
                         place = c.value()
-        return (date,place)
+        return (date, place)
 
     def death_year(self):
         """ Return the death year of a person in integer format """
@@ -565,12 +571,12 @@ class Element:
                 for c in e.children():
                     if c.tag() == "DATE":
                         datel = string.split(c.value())
-                        date = datel[len(datel)-1]
-        if date == "":										# Added by Darren Enns 2009-02-19
-            return -1										# Added by Darren Enns 2009-02-19
+                        date = datel[len(datel) - 1]
+        if date == "":
+            return -1
         try:
             return int(date)
-        except:
+        except:  # noqa
             return -1
 
     def deceased(self):
@@ -589,12 +595,12 @@ class Element:
         date = ""
         place = ""
         if not self.individual():
-            return (date,place)
+            return (date, place)
         for e in self.children():
             if e.tag() == "FAMS":
-                f = self.__dict.get(e.value(),None)
-                if f == None:
-                    return (date,place)
+                f = self.__dict.get(e.value(), None)
+                if f is None:
+                    return (date, place)
                 for g in f.children():
                     if g.tag() == "MARR":
                         for h in g.children():
@@ -602,7 +608,7 @@ class Element:
                                 date = h.value()
                             if h.tag() == "PLAC":
                                 place = h.value()
-        return (date,place)
+        return (date, place)
 
     def marriage_years(self):
         """ Return a list of marriage years for a person, each in integer
@@ -613,26 +619,24 @@ class Element:
             return dates
         for e in self.children():
             if e.tag() == "FAMS":
-                f = self.__dict.get(e.value(),None)
-                if f == None:
+                f = self.__dict.get(e.value(), None)
+                if f is None:
                     return dates
                 for g in f.children():
                     if g.tag() == "MARR":
                         for h in g.children():
                             if h.tag() == "DATE":
                                 datel = string.split(h.value())
-                                date = datel[len(datel)-1]
+                                date = datel[len(datel) - 1]
                                 try:
                                     dates.append(int(date))
-                                except:
+                                except:  # noqa
                                     pass
         return dates
 
     def get_individual(self):
         """ Return this element and all of its sub-elements """
-	#print repr(self)
-        #result = str(self)
-	result = unicode(self)
+        result = unicode(self)
         for e in self.children():
             result += '\n' + e.get_individual()
         return result
@@ -642,7 +646,7 @@ class Element:
         for e in self.children():
             if e.tag() == "HUSB" or e.tag() == "WIFE" or e.tag() == "CHIL":
                 f = self.__dict.get(e.value())
-                if f != None:
+                if f is not None:
                     result += '\n' + f.get_individual()
         return result
 
@@ -655,4 +659,3 @@ class Element:
         if self.value() != "":
             result += ' ' + self.value()
         return result
-
