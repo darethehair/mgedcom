@@ -1,8 +1,8 @@
 ﻿THE INTRO
 ---------
 mgedcom
-version 0.87
-2015/12/18
+version 0.88
+2016/01/12
 
 Copyright (C) 2009-2016 Darren Enns <dmenns1@gmail.com>
 
@@ -585,4 +585,8 @@ CHANGES
 - add 'mgedcom.ini' options file for setting/saving user preferences
 - add explicit dot file select menu option for conversion
 - add ability to preserve last-used GEDCOM and DOT directory locations
+
+2016/01/12 = version 0.88
+- fix bug in overwriting mgedcom.ini file when its existance was not detected
+- convert to PEP-8 formatting compliancy
 --------------------------------------------------------------------------------
